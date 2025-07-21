@@ -3,10 +3,10 @@ import {
   findUserByEmail,
   createUser as createUserRecord,
   updateUser as updateUserRecord,
-} from "../repositories/user.repository";
-import { Ok, NotFound, BadRequest, type Result } from "../core/result";
-import type { User, NewUser } from "../db/schema";
-import { hashPassword, comparePassword } from "../lib/utils";
+} from "@/repositories/user.repository";
+import { Ok, NotFound, BadRequest, type Result } from "@/core/result";
+import type { User, NewUser } from "@/db/schema";
+import { hashPassword, comparePassword } from "@/lib/utils";
 
 export const getUserProfile = async (user: {
   userId: string;

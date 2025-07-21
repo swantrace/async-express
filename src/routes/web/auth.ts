@@ -5,7 +5,7 @@ import {
   signupHandler,
   loginHandler,
   logoutHandler,
-} from "../../controllers/web/auth.controller";
+} from "@/controllers/web/auth.controller";
 
 const router: Router = express.Router();
 

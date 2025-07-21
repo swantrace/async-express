@@ -4,7 +4,7 @@
     "start": "node dist/server.js",
     "prestart": "pnpm run build",
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "test": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
@@ -26,6 +26,7 @@
     "express-ejs-layouts": "^2.5.1",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
+    "tsconfig-paths": "^4.2.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -40,6 +41,7 @@
     "@types/node": "^22.0.0",
     "better-sqlite3": "^12.2.0",
     "drizzle-kit": "^0.31.4",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
     "vitest": "^2.0.0"

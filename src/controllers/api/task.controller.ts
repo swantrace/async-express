@@ -1,5 +1,5 @@
-import { compose } from "../../core/compose";
-import { authenticateApiUser } from "../../services/auth.service";
+import { compose } from "@/core/compose";
+import { authenticateApiUser } from "@/services/auth.service";
 import {
   prepareTaskCreation,
   prepareTaskUpdate,
@@ -7,8 +7,8 @@ import {
   prepareTaskDeletion,
   prepareTaskGet,
   prepareTasksList,
-} from "../../services/task.service";
-import { createTaskSchema, updateTaskSchema } from "../../db/schema";
+} from "@/services/task.service";
+import { createTaskSchema, updateTaskSchema } from "@/db/schema";
 
 // Compose handlers
 export const getTasksHandler = compose(

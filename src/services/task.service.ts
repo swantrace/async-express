@@ -4,9 +4,9 @@ import {
   createTask as createTaskRecord,
   updateTask as updateTaskRecord,
   deleteTask as deleteTaskRecord,
-} from "../repositories/task.repository";
-import { Ok, NotFound, type Result } from "../core/result";
-import type { Task, NewTask } from "../db/schema";
+} from "@/repositories/task.repository";
+import { Ok, NotFound, type Result } from "@/core/result";
+import type { Task, NewTask } from "@/db/schema";
 
 export const getTasksWithStats = async (
   userId: string

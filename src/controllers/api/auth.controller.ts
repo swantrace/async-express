@@ -1,11 +1,11 @@
-import { compose } from "../../core/compose";
+import { compose } from "@/core/compose";
 import {
   prepareUserRegistration,
   generateRegistrationToken,
   prepareUserLogin,
   generateLoginToken,
-} from "../../services/auth.service";
-import { signupSchema, loginSchema } from "../../schemas/auth";
+} from "@/services/auth.service";
+import { signupSchema, loginSchema } from "@/schemas/auth";
 
 // Compose handlers
 export const registerHandler = compose(

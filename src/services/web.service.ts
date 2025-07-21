@@ -1,5 +1,5 @@
 import { title } from "process";
-import { Ok, type Result } from "../core/result";
+import { Ok, type Result } from "@/core/result";
 
 // Auth rendering functions
 export async function prepareLoginPage(): Promise<

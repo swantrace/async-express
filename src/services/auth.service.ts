@@ -1,12 +1,12 @@
 import { registerUser, authenticateUser } from "./user.service";
-import { generateToken, verifyToken } from "../lib/utils";
+import { generateToken, verifyToken } from "@/lib/utils";
 import {
   Ok,
   Unauthorized,
   type Result,
   type ValidatedMetadata,
-} from "../core/result";
-import type { signupSchema, loginSchema } from "../schemas/auth";
+} from "@/core/result";
+import type { signupSchema, loginSchema } from "@/schemas/auth";
 
 // Types for validation schemas
 type RegisterSchemas = {

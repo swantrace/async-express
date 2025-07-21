@@ -1,18 +1,18 @@
 import express, { Request, Response } from "express";
-import { compose } from "../../core/compose";
+import { compose } from "@/core/compose";
 import {
   prepareUserRegistration,
   generateRegistrationTokenWithCookie,
   prepareUserLogin,
   generateLoginTokenWithCookie,
-} from "../../services/auth.service";
+} from "@/services/auth.service";
 import {
   prepareLoginPage,
   prepareSignupPage,
   redirectAfterLogin,
   redirectAfterSignup,
-} from "../../services/web.service";
-import { signupSchema, loginSchema } from "../../schemas/auth";
+} from "@/services/web.service";
+import { signupSchema, loginSchema } from "@/schemas/auth";
 
 // Page rendering handlers
 export const renderLoginHandler = compose([prepareLoginPage], {
