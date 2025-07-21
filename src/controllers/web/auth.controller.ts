@@ -12,7 +12,7 @@ import {
   redirectAfterLogin,
   redirectAfterSignup,
 } from "@/services/web.service";
-import { signupSchema, loginSchema } from "@/schemas/auth";
+import { signupSchema, loginSchema } from "@/db/schema";
 
 // Page rendering handlers
 export const renderLoginHandler = compose([prepareLoginPage], {

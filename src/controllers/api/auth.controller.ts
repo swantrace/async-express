@@ -5,7 +5,7 @@ import {
   prepareUserLogin,
   generateLoginToken,
 } from "@/services/auth.service";
-import { signupSchema, loginSchema } from "@/schemas/auth";
+import { signupSchema, loginSchema } from "@/db/schema";
 
 // Compose handlers
 export const registerHandler = compose(

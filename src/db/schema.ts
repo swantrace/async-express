@@ -60,23 +60,45 @@ export const selectUserSchema = createSelectSchema(users);
 export const insertTaskSchema = createInsertSchema(tasks);
 export const selectTaskSchema = createSelectSchema(tasks);
 
-// API validation schemas
-export const registerSchema = insertUserSchema
-  .pick({
-    email: true,
-    name: true,
-  })
-  .extend({
-    password: z.string().min(6),
-  });
+// API validation schemas with enhanced validation
+export const registerSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  name: z.string().min(1, "Name is required"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
 
-export const loginSchema = insertUserSchema
-  .pick({
-    email: true,
-  })
-  .extend({
-    password: z.string().min(1),
-  });
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(1, "Password is required"),
+});
+
+// Aliases for backward compatibility and clearer naming
+export const signupSchema = registerSchema;
+
+// Type definitions for API responses and auth
+export type SignupInput = z.infer<typeof signupSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
+export type RegisterInput = z.infer<typeof registerSchema>;
+
+export type UserResponse = {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+};
+
+export type AuthUser = {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  hashedPassword: string;
+};
+
+export type AuthResponse = {
+  success: boolean;
+  user: UserResponse;
+};
 
 export const updateProfileSchema = insertUserSchema
   .pick({

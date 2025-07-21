@@ -6,7 +6,7 @@ import {
   type Result,
   type ValidatedMetadata,
 } from "@/core/result";
-import type { signupSchema, loginSchema } from "@/schemas/auth";
+import type { signupSchema, loginSchema } from "@/db/schema";
 
 // Types for validation schemas
 type RegisterSchemas = {
