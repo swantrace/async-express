@@ -1,80 +1,29 @@
 import { compose } from "../../core/compose";
-import { authenticateUser } from "../../auth/middleware";
+import { authenticateApiUser } from "../../services/auth.service";
 import {
-  createTask,
-  updateTask,
-  deleteTask,
-  toggleTaskCompletion,
-  getTask,
-  getTasks,
+  prepareTaskCreation,
+  prepareTaskUpdate,
+  prepareTaskToggle,
+  prepareTaskDeletion,
+  prepareTaskGet,
+  prepareTasksList,
 } from "../../services/task.service";
-import { createTaskSchema, updateTaskSchema } from "../../db/prisma";
-import type { ValidatedMetadata } from "../../core/result";
-
-// Types
-type CreateTaskSchemas = {
-  body: typeof createTaskSchema;
-};
-
-type UpdateTaskSchemas = {
-  body: typeof updateTaskSchema;
-};
-
-// Pipeline steps
-async function prepareTaskCreation(
-  user: { userId: string; email: string; role: string },
-  metadata: ValidatedMetadata<CreateTaskSchemas>
-) {
-  return await createTask(user.userId, metadata.body);
-}
-
-async function prepareTaskUpdate(
-  user: { userId: string; email: string; role: string },
-  metadata: ValidatedMetadata<UpdateTaskSchemas> & { params: { id: string } }
-) {
-  return await updateTask(metadata.params.id, user.userId, metadata.body);
-}
-
-async function prepareTaskToggle(
-  user: { userId: string; email: string; role: string },
-  metadata: ValidatedMetadata<any> & { params: { id: string } }
-) {
-  return await toggleTaskCompletion(metadata.params.id, user.userId);
-}
-
-async function prepareTaskDeletion(
-  user: { userId: string; email: string; role: string },
-  metadata: ValidatedMetadata<any> & { params: { id: string } }
-) {
-  return await deleteTask(metadata.params.id, user.userId);
-}
-
-async function prepareTaskGet(
-  user: { userId: string; email: string; role: string },
-  metadata: ValidatedMetadata<any> & { params: { id: string } }
-) {
-  return await getTask(metadata.params.id, user.userId);
-}
-
-async function prepareTasksList(user: {
-  userId: string;
-  email: string;
-  role: string;
-}) {
-  return await getTasks(user.userId);
-}
+import { createTaskSchema, updateTaskSchema } from "../../db/schema";
 
 // Compose handlers
-export const getTasksHandler = compose([authenticateUser, prepareTasksList], {
-  enableLogging: true,
-});
+export const getTasksHandler = compose(
+  [authenticateApiUser, prepareTasksList],
+  {
+    enableLogging: true,
+  }
+);
 
-export const getTaskHandler = compose([authenticateUser, prepareTaskGet], {
+export const getTaskHandler = compose([authenticateApiUser, prepareTaskGet], {
   enableLogging: true,
 });
 
 export const createTaskHandler = compose(
-  [authenticateUser, prepareTaskCreation],
+  [authenticateApiUser, prepareTaskCreation],
   {
     validationSchemas: {
       body: createTaskSchema,
@@ -84,7 +33,7 @@ export const createTaskHandler = compose(
 );
 
 export const updateTaskHandler = compose(
-  [authenticateUser, prepareTaskUpdate],
+  [authenticateApiUser, prepareTaskUpdate],
   {
     validationSchemas: {
       body: updateTaskSchema,
@@ -94,14 +43,14 @@ export const updateTaskHandler = compose(
 );
 
 export const toggleTaskHandler = compose(
-  [authenticateUser, prepareTaskToggle],
+  [authenticateApiUser, prepareTaskToggle],
   {
     enableLogging: true,
   }
 );
 
 export const deleteTaskHandler = compose(
-  [authenticateUser, prepareTaskDeletion],
+  [authenticateApiUser, prepareTaskDeletion],
   {
     enableLogging: true,
   }

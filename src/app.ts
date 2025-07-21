@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Express } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { compose, wrapMiddleware } from "./core/compose";
@@ -10,10 +10,7 @@ import expressLayouts from "express-ejs-layouts";
 import apiRoutes from "./routes/api/index";
 import webRoutes from "./routes/web/index";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const app = express();
+const app: Express = express();
 
 // Security and parsing middleware
 app.use(

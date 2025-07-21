@@ -1,7 +1,7 @@
 <div class="auth-container">
   <div class="auth-form">
     <h2>Sign Up</h2>
-    <form id="signupForm" action="/api/auth/register" method="POST">
+    <form id="signupForm" action="/auth/signup" method="POST">
       <div class="form-group">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required />
@@ -14,12 +14,7 @@
 
       <div class="form-group">
         <label for="hashedPassword">Password:</label>
-        <input
-          type="password"
-          id="hashedPassword"
-          name="hashedPassword"
-          required
-        />
+        <input type="password" id="password" name="password" required />
       </div>
 
       <button type="submit">Sign Up</button>
@@ -30,34 +25,15 @@
 </div>
 
 <script>
-  document
-    .getElementById("signupForm")
-    .addEventListener("submit", async (e) => {
+  // Simple form validation (optional)
+  document.getElementById("signupForm").addEventListener("submit", (e) => {
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!name || !email || !password) {
       e.preventDefault();
-
-      const formData = new FormData(e.target);
-      const data = Object.fromEntries(formData);
-
-      try {
-        const response = await fetch("/api/auth/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          // Set token in cookie and redirect
-          document.cookie = `token=${result.token}; path=/; max-age=604800`; // 7 days
-          window.location.href = "/dashboard";
-        } else {
-          alert(result.message || "Registration failed");
-        }
-      } catch (error) {
-        alert("An error occurred during registration");
-      }
-    });
+      alert("Please fill in all fields");
+    }
+  });
 </script>

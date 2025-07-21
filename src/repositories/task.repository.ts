@@ -1,5 +1,5 @@
 import { db } from "../db/client";
-import { tasks, type Task, type NewTask } from "../db/prisma";
+import { tasks, type Task, type NewTask } from "../db/schema";
 import { eq, and } from "drizzle-orm";
 
 export const findTasksByUserId = async (userId: string): Promise<Task[]> => {

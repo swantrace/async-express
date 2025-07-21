@@ -1,5 +1,7 @@
 import jwt, { SignOptions } from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
+// JWT Utilities
 export interface JwtPayload {
   userId: string;
   email: string;
@@ -21,4 +23,18 @@ export const verifyToken = (token: string): JwtPayload | null => {
   } catch (error) {
     return null;
   }
+};
+
+// Password Utilities
+const SALT_ROUNDS = 12;
+
+export const hashPassword = async (password: string): Promise<string> => {
+  return await bcrypt.hash(password, SALT_ROUNDS);
+};
+
+export const comparePassword = async (
+  password: string,
+  hashedPassword: string
+): Promise<boolean> => {
+  return await bcrypt.compare(password, hashedPassword);
 };

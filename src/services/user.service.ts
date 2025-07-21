@@ -5,8 +5,8 @@ import {
   updateUser as updateUserRecord,
 } from "../repositories/user.repository";
 import { Ok, NotFound, BadRequest, type Result } from "../core/result";
-import type { User, NewUser } from "../db/prisma";
-import { hashPassword, comparePassword } from "../auth/password";
+import type { User, NewUser } from "../db/schema";
+import { hashPassword, comparePassword } from "../lib/utils";
 
 export const getUserProfile = async (user: {
   userId: string;
@@ -109,3 +109,11 @@ export const authenticateUser = async (
   const { hashedPassword, ...safeUserData } = user;
   return Ok(safeUserData as User);
 };
+
+// Pipeline functions for controllers
+export async function prepareProfileUpdate(
+  user: { userId: string; email: string; role: string },
+  metadata: { body: any }
+) {
+  return await updateProfile(user.userId, metadata.body);
+}

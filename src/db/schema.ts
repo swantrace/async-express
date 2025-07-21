@@ -2,6 +2,7 @@ import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
+import { z } from "zod";
 
 export const users = sqliteTable("users", {
   id: text("id")
@@ -10,6 +11,7 @@ export const users = sqliteTable("users", {
   email: text("email").notNull().unique(),
   name: text("name").notNull(),
   hashedPassword: text("hashed_password").notNull(),
+  role: text("role").notNull().default("user"), // user, admin
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
     () => new Date()
   ),
@@ -65,7 +67,7 @@ export const registerSchema = insertUserSchema
     name: true,
   })
   .extend({
-    password: insertUserSchema.shape.hashedPassword,
+    password: z.string().min(6),
   });
 
 export const loginSchema = insertUserSchema
@@ -73,7 +75,7 @@ export const loginSchema = insertUserSchema
     email: true,
   })
   .extend({
-    password: insertUserSchema.shape.hashedPassword,
+    password: z.string().min(1),
   });
 
 export const updateProfileSchema = insertUserSchema

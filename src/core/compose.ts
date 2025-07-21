@@ -61,7 +61,28 @@ function sendResponse<T>(
       console.log(`✓ Success response: ${statusCode}`, { data });
     }
 
-    res.status(statusCode).json(data);
+    // Check if data has view property (for rendering templates)
+    if (
+      data &&
+      typeof data === "object" &&
+      "view" in data &&
+      typeof data.view === "string"
+    ) {
+      const templateName = data.view;
+      const templateData = (data as any).data || {};
+      res.status(statusCode).render(templateName, templateData);
+    }
+    // Check if data has redirect property
+    else if (
+      data &&
+      typeof data === "object" &&
+      "redirect" in data &&
+      typeof data.redirect === "string"
+    ) {
+      res.status(statusCode || 302).redirect(data.redirect);
+    } else {
+      res.status(statusCode).json(data);
+    }
   } else {
     const { message, statusCode, name, stack } = result[1];
 
@@ -124,9 +145,9 @@ export function wrapMiddleware<T>(
   };
 }
 
-export function compose<TSchemas extends ValidationSchemas = {}>(
+export function compose<TSchemas extends Record<string, any>>(
   pipeline: Array<PipelineFn<any, any, ValidatedMetadata<TSchemas>>>,
-  options: PipelineOptions & { validationSchemas: TSchemas }
+  options: PipelineOptions & { validationSchemas: Record<string, any> }
 ): (req: Request, res: Response) => Promise<void>;
 export function compose(
   pipeline: Array<PipelineFn<any, any>>,
@@ -144,14 +165,13 @@ export function compose(
         `🚀 Starting pipeline for ${req.method} ${req.path}, it has ${pipeline.length} steps in total`
       );
     }
-
     // Parse request data using validation schemas if provided
     let currentResult: Result<null>;
     try {
       const body = options.validationSchemas?.body
         ? options.validationSchemas.body.parse(req.body)
         : req.body;
-
+      console.log("Parsed body:", body);
       const query = options.validationSchemas?.query
         ? options.validationSchemas.query.parse(req.query)
         : req.query;
@@ -183,7 +203,6 @@ export function compose(
       sendResponse(validationError, res, options);
       return; // Early return on validation error
     }
-
     // Set up timeout if specified
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
     if (options.timeout) {
@@ -222,9 +241,12 @@ export function compose(
           }
 
           // Merge metadata from previous steps
+          const { body, query, params, cookies, ...rest } =
+            stepResult[1].metadata;
+
           const mergedMetadata = {
             ...currentResult[1].metadata,
-            ...stepResult[1].metadata,
+            ...rest,
           } as PipelineContext & Record<string, any>;
 
           const statusCode: number | undefined =

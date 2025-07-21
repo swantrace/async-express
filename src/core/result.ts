@@ -12,6 +12,8 @@ export interface PipelineContext {
   headers: any;
   req: Request;
   res: Response;
+  renderTemplate?: string; // Template name to render
+  redirect?: string; // URL to redirect to
 }
 
 export interface OkData<
@@ -40,14 +42,20 @@ export type Result<T, TMetadata extends PipelineContext = PipelineContext> =
   | ErrorResult;
 
 // Helper type to infer types from validation schemas
-type InferSchemaType<T> = T extends z.ZodSchema<infer U> ? U : any;
+type InferSchemaType<T> = T extends z.ZodTypeAny ? z.infer<T> : any;
 
 // Type for validated metadata based on schemas
-export type ValidatedMetadata<TSchemas extends ValidationSchemas> = {
-  body: InferSchemaType<TSchemas["body"]>;
-  query: InferSchemaType<TSchemas["query"]>;
-  params: InferSchemaType<TSchemas["params"]>;
-  cookies: InferSchemaType<TSchemas["cookies"]>;
+export type ValidatedMetadata<TSchemas extends Record<string, any> = any> = {
+  body: TSchemas["body"] extends z.ZodTypeAny ? z.infer<TSchemas["body"]> : any;
+  query: TSchemas["query"] extends z.ZodTypeAny
+    ? z.infer<TSchemas["query"]>
+    : any;
+  params: TSchemas["params"] extends z.ZodTypeAny
+    ? z.infer<TSchemas["params"]>
+    : any;
+  cookies: TSchemas["cookies"] extends z.ZodTypeAny
+    ? z.infer<TSchemas["cookies"]>
+    : any;
   headers: any;
   req: Request;
   res: Response;
@@ -64,17 +72,17 @@ export type PipelineFn<
 ) => Promise<Result<TOut, TMetadata>> | Result<TOut, TMetadata>;
 
 export interface ValidationSchemas {
-  readonly body?: z.ZodSchema<any>;
-  readonly query?: z.ZodSchema<any>;
-  readonly params?: z.ZodSchema<any>;
-  readonly cookies?: z.ZodSchema<any>;
+  readonly body?: z.ZodTypeAny;
+  readonly query?: z.ZodTypeAny;
+  readonly params?: z.ZodTypeAny;
+  readonly cookies?: z.ZodTypeAny;
 }
 
 export interface PipelineOptions {
   readonly successStatus?: number;
   readonly enableLogging?: boolean;
   readonly timeout?: number;
-  readonly validationSchemas?: ValidationSchemas;
+  readonly validationSchemas?: Record<string, any>;
 }
 
 // Improved Ok constructor with better overloads
@@ -118,13 +126,11 @@ export function Ok<T, TMetadata extends PipelineContext = PipelineContext>(
     ] as const;
   }
 
-  const { body, query, params, cookies, ...rest } = metadataOrStatusCode;
-
   return [
     ok,
     {
       data,
-      metadata: rest,
+      metadata: metadataOrStatusCode,
       statusCode,
     },
   ] as const;

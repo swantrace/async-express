@@ -6,9 +6,9 @@ import {
   deleteTask as deleteTaskRecord,
 } from "../repositories/task.repository";
 import { Ok, NotFound, type Result } from "../core/result";
-import type { Task, NewTask } from "../db/prisma";
+import type { Task, NewTask } from "../db/schema";
 
-export const getDashboardData = async (
+export const getTasksWithStats = async (
   userId: string
 ): Promise<
   Result<{
@@ -107,3 +107,56 @@ export const getTasks = async (userId: string): Promise<Result<Task[]>> => {
   const tasks = await findTasksByUserId(userId);
   return Ok(tasks);
 };
+
+// Pipeline functions for controllers
+export async function prepareTaskCreation(
+  user: { userId: string; email: string; role: string },
+  metadata
+) {
+  return await createTask(user.userId, metadata.body);
+}
+
+export async function prepareTaskUpdate(
+  user: { userId: string; email: string; role: string },
+  metadata: { body: any; params: { id: string } }
+) {
+  return await updateTask(metadata.params.id, user.userId, metadata.body);
+}
+
+export async function prepareTaskToggle(
+  user: { userId: string; email: string; role: string },
+  metadata: { params: { id: string } }
+) {
+  return await toggleTaskCompletion(metadata.params.id, user.userId);
+}
+
+export async function prepareTaskDeletion(
+  user: { userId: string; email: string; role: string },
+  metadata: { params: { id: string } }
+) {
+  return await deleteTask(metadata.params.id, user.userId);
+}
+
+export async function prepareTaskGet(
+  user: { userId: string; email: string; role: string },
+  metadata: { params: { id: string } }
+) {
+  return await getTask(metadata.params.id, user.userId);
+}
+
+export async function prepareTasksList(user: {
+  userId: string;
+  email: string;
+  role: string;
+}) {
+  return await getTasks(user.userId);
+}
+
+// Web-specific task functions
+export async function getTasksData(user: {
+  userId: string;
+  email: string;
+  role: string;
+}) {
+  return await getTasksWithStats(user.userId);
+}
