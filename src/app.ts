@@ -1,11 +1,19 @@
 import express from "express";
 import path from "path";
-import { compose, wrapMiddleware } from "./core/compose";
+import { fileURLToPath } from "url";
+import { compose, wrapMiddleware } from "./core/compose.js";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
+import authRoutes from "./auth/routes.js";
+import userRoutes from "./api/user.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 
 app.use(helmet());
-app.use(express.static("public"));
+app.use(cookieParser());
 app.use(
   express.json({
     type: ["application/json", "application/fhir+json"],
@@ -13,7 +21,13 @@ app.use(
 );
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
+app.set("views", path.join(process.cwd(), "src", "views"));
+
+// Auth routes
+app.use("/api/auth", authRoutes);
+
+// Protected user routes
+app.use("/api/user", userRoutes);
 
 app.get(
   "/",
