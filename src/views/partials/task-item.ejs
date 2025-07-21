@@ -1,0 +1,31 @@
+<div
+  class="task-item <%= task.completed ? 'completed' : '' %> priority-<%= task.priority %>"
+>
+  <div class="task-content">
+    <div class="task-header">
+      <h4><%= task.title %></h4>
+      <span class="priority-badge <%= task.priority %>"
+        ><%= task.priority %></span
+      >
+    </div>
+    <% if (task.description) { %>
+    <p class="task-description"><%= task.description %></p>
+    <% } %>
+    <div class="task-meta">
+      <small>Created: <%= task.createdAt.toLocaleDateString() %></small>
+      <% if (task.completed) { %>
+      <span class="status completed">✓ Completed</span>
+      <% } else { %>
+      <span class="status pending">⏳ Pending</span>
+      <% } %>
+    </div>
+  </div>
+  <div class="task-actions">
+    <button onclick="toggleTask('<%= task.id %>')" class="btn-toggle">
+      <%= task.completed ? 'Mark Incomplete' : 'Mark Complete' %>
+    </button>
+    <button onclick="deleteTask('<%= task.id %>')" class="btn-delete">
+      Delete
+    </button>
+  </div>
+</div>

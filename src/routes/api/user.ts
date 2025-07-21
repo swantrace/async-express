@@ -2,7 +2,7 @@ import express, { Router } from "express";
 import {
   getProfileHandler,
   updateProfileHandler,
-} from "../controllers/api/user.controller";
+} from "../../controllers/api/user.controller";
 
 const router: Router = express.Router();
 

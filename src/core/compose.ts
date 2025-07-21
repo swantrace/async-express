@@ -13,7 +13,7 @@ import {
   isOk,
   isErr,
   fromError,
-} from "./result.js";
+} from "./result";
 
 function handlePipelineError(error: unknown, stepName?: string): ErrorResult {
   const errorMessage = error instanceof Error ? error.message : "Unknown error";

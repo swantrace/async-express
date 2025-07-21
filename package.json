@@ -1,22 +1,31 @@
 {
   "name": "async-express",
   "scripts": {
-    "start": "node dist/app.js",
+    "start": "node dist/server.js",
     "prestart": "pnpm run build",
-    "dev": "tsx watch src/app.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "test": "vitest"
+    "test": "vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "module": "src/app.ts",
   "type": "module",
   "private": true,
   "dependencies": {
+    "@paralleldrive/cuid2": "^2.2.2",
     "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
     "chalk": "^5.4.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.0",
+    "drizzle-orm": "^0.44.3",
+    "drizzle-zod": "^0.8.2",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
+    "express-ejs-layouts": "^2.5.1",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "zod": "^4.0.5"
@@ -24,10 +33,15 @@
   "devDependencies": {
     "@flydotio/dockerfile": "^0.7.8",
     "@types/bcrypt": "^6.0.0",
+    "@types/bcryptjs": "^3.0.0",
     "@types/cookie-parser": "^1.4.9",
+    "@types/ejs": "^3.1.5",
     "@types/express": "^4.17.17",
+    "@types/express-ejs-layouts": "^2.5.4",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.0.0",
+    "better-sqlite3": "^12.2.0",
+    "drizzle-kit": "^0.31.4",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
     "vitest": "^2.0.0"

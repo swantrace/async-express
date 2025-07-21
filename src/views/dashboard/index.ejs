@@ -1,0 +1,123 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h2>Welcome to Your Dashboard</h2>
+    <p>Here's an overview of your tasks</p>
+  </div>
+
+  <div class="stats-container">
+    <div class="stat-card">
+      <h3><%= data.stats.total %></h3>
+      <p>Total Tasks</p>
+    </div>
+    <div class="stat-card">
+      <h3><%= data.stats.completed %></h3>
+      <p>Completed</p>
+    </div>
+    <div class="stat-card">
+      <h3><%= data.stats.pending %></h3>
+      <p>Pending</p>
+    </div>
+    <div class="stat-card priority">
+      <h3><%= data.stats.highPriority %></h3>
+      <p>High Priority</p>
+    </div>
+  </div>
+
+  <div class="task-form-container">
+    <h3>Add New Task</h3>
+    <form id="taskForm">
+      <div class="form-row">
+        <input
+          type="text"
+          id="title"
+          name="title"
+          placeholder="Task title"
+          required
+        />
+        <select id="priority" name="priority">
+          <option value="low">Low Priority</option>
+          <option value="medium" selected>Medium Priority</option>
+          <option value="high">High Priority</option>
+        </select>
+        <button type="submit">Add Task</button>
+      </div>
+      <textarea
+        id="description"
+        name="description"
+        placeholder="Task description (optional)"
+      ></textarea>
+    </form>
+  </div>
+
+  <div class="tasks-container">
+    <h3>Your Tasks</h3>
+    <div id="tasksList" class="tasks-list">
+      <% data.tasks.forEach(task => { %> <%- include('../partials/task-item', {
+      task }) %> <% }) %>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Add task form submission
+  document.getElementById("taskForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+
+    try {
+      const response = await fetch("/api/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        location.reload(); // Simple reload for now
+      } else {
+        alert("Failed to create task");
+      }
+    } catch (error) {
+      alert("An error occurred while creating the task");
+    }
+  });
+
+  // Toggle task completion
+  async function toggleTask(taskId) {
+    try {
+      const response = await fetch(`/api/tasks/${taskId}/toggle`, {
+        method: "PATCH",
+      });
+
+      if (response.ok) {
+        location.reload(); // Simple reload for now
+      } else {
+        alert("Failed to update task");
+      }
+    } catch (error) {
+      alert("An error occurred while updating the task");
+    }
+  }
+
+  // Delete task
+  async function deleteTask(taskId) {
+    if (confirm("Are you sure you want to delete this task?")) {
+      try {
+        const response = await fetch(`/api/tasks/${taskId}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          location.reload(); // Simple reload for now
+        } else {
+          alert("Failed to delete task");
+        }
+      } catch (error) {
+        alert("An error occurred while deleting the task");
+      }
+    }
+  }
+</script>

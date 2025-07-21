@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from "express";
-import { prisma } from "../db/prisma.js";
-import { hashPassword, comparePassword } from "./password.js";
-import { generateToken } from "./jwt.js";
+import { prisma } from "../db/prisma";
+import { hashPassword, comparePassword } from "./password";
+import { generateToken } from "./jwt";
 import {
   signupSchema,
   loginSchema,
@@ -9,15 +9,15 @@ import {
   type UserResponse,
   type AuthResponse,
   type AuthUser,
-} from "../schemas/auth.js";
+} from "../schemas/auth";
 import {
   Ok,
   BadRequest,
   Unauthorized,
   type Result,
   type ValidatedMetadata,
-} from "../core/result.js";
-import { compose } from "../core/compose.js";
+} from "../core/result";
+import { compose } from "../core/compose";
 
 const router: Router = express.Router();
 

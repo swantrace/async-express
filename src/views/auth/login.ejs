@@ -1,0 +1,56 @@
+<div class="auth-container">
+  <div class="auth-form">
+    <h2>Login</h2>
+    <form id="loginForm" action="/api/auth/login" method="POST">
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+
+      <div class="form-group">
+        <label for="hashedPassword">Password:</label>
+        <input
+          type="password"
+          id="hashedPassword"
+          name="hashedPassword"
+          required
+        />
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+
+    <p>Don't have an account? <a href="/auth/signup">Sign up here</a></p>
+  </div>
+</div>
+
+<script>
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Set token in cookie and redirect
+        document.cookie = `token=${result.token}; path=/; max-age=604800`; // 7 days
+        window.location.href = "/dashboard";
+      } else {
+        alert(result.message || "Login failed");
+      }
+    } catch (error) {
+      alert("An error occurred during login");
+    }
+  });
+</script>
