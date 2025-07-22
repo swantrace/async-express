@@ -1,4 +1,3 @@
-import { title } from "process";
 import { Ok, type Result } from "@/core/result";
 
 // Auth rendering functions
@@ -25,17 +24,17 @@ export async function prepareSignupPage(): Promise<
 }
 
 // Web auth redirect functions
-export async function redirectAfterLogin(
-  data: any
-): Promise<Result<{ redirect: string }>> {
+export async function redirectAfterLogin(): Promise<
+  Result<{ redirect: string }>
+> {
   return Ok({
     redirect: "/tasks",
   });
 }
 
-export async function redirectAfterSignup(
-  data: any
-): Promise<Result<{ redirect: string }>> {
+export async function redirectAfterSignup(): Promise<
+  Result<{ redirect: string }>
+> {
   return Ok({
     redirect: "/tasks",
   });

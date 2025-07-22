@@ -1,12 +1,10 @@
 import {
   findUserById,
   findUserByEmail,
-  createUser as createUserRecord,
-  updateUser as updateUserRecord,
+  updateUser,
 } from "@/repositories/user.repository";
 import { Ok, NotFound, BadRequest, type Result } from "@/core/result";
 import type { User, NewUser } from "@/db/schema";
-import { hashPassword, comparePassword } from "@/lib/utils";
 
 export const getUserProfile = async (user: {
   userId: string;
@@ -26,10 +24,12 @@ export const getUserProfile = async (user: {
   });
 };
 
-export const updateProfile = async (
-  userId: string,
-  updates: Partial<Pick<User, "name" | "email">>
-): Promise<Result<{ message: string; user: User }>> => {
+export async function prepareProfileUpdate(
+  user: { userId: string; email: string; role: string },
+  metadata: { body: any }
+) {
+  const { userId } = user;
+  const updates = metadata.body;
   const existingUser = await findUserById(userId);
 
   if (!existingUser) {
@@ -44,7 +44,7 @@ export const updateProfile = async (
     }
   }
 
-  const updatedUser = await updateUserRecord(userId, updates);
+  const updatedUser = await updateUser(userId, updates);
 
   if (!updatedUser) {
     return NotFound("User not found");
@@ -57,63 +57,4 @@ export const updateProfile = async (
     message: "Profile updated successfully",
     user: safeUserData as User,
   });
-};
-
-export const registerUser = async (userData: {
-  email: string;
-  name: string;
-  password: string;
-}): Promise<Result<{ message: string; user: User }>> => {
-  // Check if user already exists
-  const existingUser = await findUserByEmail(userData.email);
-  if (existingUser) {
-    return BadRequest("User already exists");
-  }
-
-  // Hash password
-  const hashedPassword = await hashPassword(userData.password);
-
-  // Create user
-  const newUser = await createUserRecord({
-    email: userData.email,
-    name: userData.name,
-    hashedPassword,
-  });
-
-  // Remove sensitive data
-  const { hashedPassword: _, ...safeUserData } = newUser;
-
-  return Ok({
-    message: "User registered successfully",
-    user: safeUserData as User,
-  });
-};
-
-export const authenticateUser = async (
-  email: string,
-  password: string
-): Promise<Result<User>> => {
-  const user = await findUserByEmail(email);
-
-  if (!user) {
-    return BadRequest("Invalid credentials");
-  }
-
-  const isValidPassword = await comparePassword(password, user.hashedPassword);
-
-  if (!isValidPassword) {
-    return BadRequest("Invalid credentials");
-  }
-
-  // Remove sensitive data
-  const { hashedPassword, ...safeUserData } = user;
-  return Ok(safeUserData as User);
-};
-
-// Pipeline functions for controllers
-export async function prepareProfileUpdate(
-  user: { userId: string; email: string; role: string },
-  metadata: { body: any }
-) {
-  return await updateProfile(user.userId, metadata.body);
 }

@@ -1,12 +1,14 @@
-import { registerUser, authenticateUser } from "./user.service";
 import { generateToken, verifyToken } from "@/lib/utils";
 import {
+  BadRequest,
   Ok,
   Unauthorized,
   type Result,
   type ValidatedMetadata,
 } from "@/core/result";
-import type { signupSchema, loginSchema } from "@/db/schema";
+import type { signupSchema, loginSchema, User } from "@/db/schema";
+import { createUser, findUserByEmail } from "@/repositories/user.repository";
+import { hashPassword, comparePassword } from "@/lib/utils";
 
 // Types for validation schemas
 type RegisterSchemas = {
@@ -23,7 +25,29 @@ export async function prepareUserRegistration(
   metadata: ValidatedMetadata<RegisterSchemas>
 ): Promise<Result<{ message: string; user: any }>> {
   const { email, name, password } = metadata.body;
-  return await registerUser({ email, name, password });
+  // Check if user already exists
+  const existingUser = await findUserByEmail(email);
+  if (existingUser) {
+    return BadRequest("User already exists");
+  }
+
+  // Hash password
+  const hashedPassword = await hashPassword(password);
+
+  // Create user
+  const newUser = await createUser({
+    email,
+    name,
+    hashedPassword,
+  });
+
+  // Remove sensitive data
+  const { hashedPassword: _hashed, ...safeUserData } = newUser;
+
+  return Ok({
+    message: "User registered successfully",
+    user: safeUserData as User,
+  });
 }
 
 export async function generateRegistrationToken(data: {
@@ -48,7 +72,21 @@ export async function prepareUserLogin(
   metadata: ValidatedMetadata<LoginSchemas>
 ): Promise<Result<any>> {
   const { email, password } = metadata.body;
-  return await authenticateUser(email, password);
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    return BadRequest("Invalid credentials");
+  }
+
+  const isValidPassword = await comparePassword(password, user.hashedPassword);
+
+  if (!isValidPassword) {
+    return BadRequest("Invalid credentials");
+  }
+
+  // Remove sensitive data
+  const { hashedPassword, ...safeUserData } = user;
+  return Ok(safeUserData as User);
 }
 
 export async function generateLoginToken(user: any) {
