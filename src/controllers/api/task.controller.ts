@@ -8,7 +8,11 @@ import {
   getTask,
   listTasks,
 } from "@/services/task.service";
-import { createTaskSchema, updateTaskSchema } from "@/db/schema";
+import {
+  createTaskSchema,
+  updateTaskSchema,
+  taskParamsSchema,
+} from "@/db/schema";
 
 // Compose handlers
 export const getTasksHandler = compose([authenticateApiUser, listTasks], {
@@ -16,6 +20,9 @@ export const getTasksHandler = compose([authenticateApiUser, listTasks], {
 });
 
 export const getTaskHandler = compose([authenticateApiUser, getTask], {
+  validationSchemas: {
+    params: taskParamsSchema,
+  },
   enableLogging: true,
 });
 
@@ -29,14 +36,21 @@ export const createTaskHandler = compose([authenticateApiUser, createTask], {
 export const updateTaskHandler = compose([authenticateApiUser, updateTask], {
   validationSchemas: {
     body: updateTaskSchema,
+    params: taskParamsSchema,
   },
   enableLogging: true,
 });
 
 export const toggleTaskHandler = compose([authenticateApiUser, toggleTask], {
+  validationSchemas: {
+    params: taskParamsSchema,
+  },
   enableLogging: true,
 });
 
 export const deleteTaskHandler = compose([authenticateApiUser, deleteTask], {
+  validationSchemas: {
+    params: taskParamsSchema,
+  },
   enableLogging: true,
 });

@@ -1,9 +1,26 @@
-import { Ok, type Result } from "@/core/result";
+import { Ok, type Result, type ValidatedMetadata } from "@/core/result";
+import type { Task } from "@/db/schema";
+
+// Template view data types
+type ViewData = Record<string, any>;
+type ViewResult = { view: string; data: ViewData };
+type RedirectResult = { redirect: string };
+type TaskListData = {
+  tasks: Task[];
+  stats: {
+    total: number;
+    completed: number;
+    pending: number;
+    highPriority: number;
+  };
+  title: string;
+};
 
 // Auth rendering functions
-export async function renderLoginPage(): Promise<
-  Result<{ view: string; data: any }>
-> {
+export async function renderLoginPage(
+  _: null,
+  metadata: ValidatedMetadata<{}>
+): Promise<Result<ViewResult>> {
   return Ok({
     view: "auth/login",
     data: {
@@ -12,9 +29,10 @@ export async function renderLoginPage(): Promise<
   });
 }
 
-export async function renderSignupPage(): Promise<
-  Result<{ view: string; data: any }>
-> {
+export async function renderSignupPage(
+  _: null,
+  metadata: ValidatedMetadata<{}>
+): Promise<Result<ViewResult>> {
   return Ok({
     view: "auth/signup",
     data: {
@@ -24,17 +42,19 @@ export async function renderSignupPage(): Promise<
 }
 
 // Web auth redirect functions
-export async function redirectAfterLogin(): Promise<
-  Result<{ redirect: string }>
-> {
+export async function redirectAfterLogin(
+  data: any,
+  metadata: ValidatedMetadata<any>
+): Promise<Result<RedirectResult>> {
   return Ok({
     redirect: "/tasks",
   });
 }
 
-export async function redirectAfterSignup(): Promise<
-  Result<{ redirect: string }>
-> {
+export async function redirectAfterSignup(
+  data: any,
+  metadata: ValidatedMetadata<any>
+): Promise<Result<RedirectResult>> {
   return Ok({
     redirect: "/tasks",
   });
@@ -42,8 +62,17 @@ export async function redirectAfterSignup(): Promise<
 
 // Task rendering functions
 export async function renderTaskList(
-  data: any
-): Promise<Result<{ view: string; data: any }>> {
+  data: {
+    tasks: Task[];
+    stats: {
+      total: number;
+      completed: number;
+      pending: number;
+      highPriority: number;
+    };
+  },
+  metadata: ValidatedMetadata<{}>
+): Promise<Result<{ view: string; data: TaskListData }>> {
   return Ok({
     view: "tasks/index",
     data: {

@@ -6,7 +6,13 @@ import {
   type Result,
   type ValidatedMetadata,
 } from "@/core/result";
-import type { signupSchema, loginSchema, User } from "@/db/schema";
+import type {
+  signupSchema,
+  loginSchema,
+  User,
+  SignupInput,
+  LoginInput,
+} from "@/db/schema";
 import { createUser, findUserByEmail } from "@/repositories/user.repository";
 import { hashPassword, comparePassword } from "@/lib/utils";
 
@@ -23,7 +29,7 @@ type LoginSchemas = {
 export async function registerUser(
   _: null,
   metadata: ValidatedMetadata<RegisterSchemas>
-): Promise<Result<{ message: string; user: any }>> {
+): Promise<Result<{ message: string; user: Omit<User, "hashedPassword"> }>> {
   const { email, name, password } = metadata.body;
   // Check if user already exists
   const existingUser = await findUserByEmail(email);
@@ -46,14 +52,16 @@ export async function registerUser(
 
   return Ok({
     message: "User registered successfully",
-    user: safeUserData as User,
+    user: safeUserData,
   });
 }
 
-export async function generateRegistrationToken(data: {
-  message: string;
-  user: any;
-}) {
+export async function generateRegistrationToken(
+  data: { message: string; user: Omit<User, "hashedPassword"> },
+  metadata: ValidatedMetadata<RegisterSchemas>
+): Promise<
+  Result<{ message: string; user: Omit<User, "hashedPassword">; token: string }>
+> {
   const token = generateToken({
     userId: data.user.id,
     email: data.user.email,
@@ -70,7 +78,7 @@ export async function generateRegistrationToken(data: {
 export async function loginUser(
   _: null,
   metadata: ValidatedMetadata<LoginSchemas>
-): Promise<Result<any>> {
+): Promise<Result<Omit<User, "hashedPassword">>> {
   const { email, password } = metadata.body;
   const user = await findUserByEmail(email);
 
@@ -86,10 +94,15 @@ export async function loginUser(
 
   // Remove sensitive data
   const { hashedPassword, ...safeUserData } = user;
-  return Ok(safeUserData as User);
+  return Ok(safeUserData);
 }
 
-export async function generateLoginToken(user: any) {
+export async function generateLoginToken(
+  user: Omit<User, "hashedPassword">,
+  metadata: ValidatedMetadata<LoginSchemas>
+): Promise<
+  Result<{ message: string; user: Omit<User, "hashedPassword">; token: string }>
+> {
   const token = generateToken({
     userId: user.id,
     email: user.email,
@@ -104,10 +117,10 @@ export async function generateLoginToken(user: any) {
 }
 
 // Cookie-based auth functions for web routes
-export async function generateRegistrationTokenWithCookie(data: {
-  message: string;
-  user: any;
-}) {
+export async function generateRegistrationTokenWithCookie(
+  data: { message: string; user: Omit<User, "hashedPassword"> },
+  metadata: ValidatedMetadata<RegisterSchemas>
+): Promise<Result<{ success: true; user: Omit<User, "hashedPassword"> }>> {
   const token = generateToken({
     userId: data.user.id,
     email: data.user.email,
@@ -133,7 +146,10 @@ export async function generateRegistrationTokenWithCookie(data: {
   );
 }
 
-export async function generateLoginTokenWithCookie(user: any) {
+export async function generateLoginTokenWithCookie(
+  user: Omit<User, "hashedPassword">,
+  metadata: ValidatedMetadata<LoginSchemas>
+): Promise<Result<{ success: true; user: Omit<User, "hashedPassword"> }>> {
   const token = generateToken({
     userId: user.id,
     email: user.email,

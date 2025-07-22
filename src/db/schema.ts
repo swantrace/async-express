@@ -116,3 +116,16 @@ export const createTaskSchema = insertTaskSchema.pick({
 export const updateTaskSchema = createTaskSchema.partial().extend({
   completed: selectTaskSchema.shape.completed.optional(),
 });
+
+// Parameter validation schemas
+export const taskParamsSchema = z.object({
+  id: z.string().min(1, "Task ID is required"),
+});
+
+export const userParamsSchema = z.object({
+  id: z.string().min(1, "User ID is required"),
+});
+
+// Type exports for parameters
+export type TaskParams = z.infer<typeof taskParamsSchema>;
+export type UserParams = z.infer<typeof userParamsSchema>;

@@ -5,13 +5,45 @@ import {
   updateTask as updateTaskRecord,
   deleteTask as deleteTaskRecord,
 } from "@/repositories/task.repository";
-import { Ok, NotFound, type Result } from "@/core/result";
-import type { Task, NewTask } from "@/db/schema";
+import {
+  Ok,
+  NotFound,
+  type Result,
+  type ValidatedMetadata,
+} from "@/core/result";
+import type {
+  Task,
+  NewTask,
+  createTaskSchema,
+  updateTaskSchema,
+  taskParamsSchema,
+} from "@/db/schema";
+
+// Types for validation schemas
+type CreateTaskSchemas = {
+  body: typeof createTaskSchema;
+};
+
+type UpdateTaskSchemas = {
+  body: typeof updateTaskSchema;
+  params: typeof taskParamsSchema;
+};
+
+type TaskParamsSchemas = {
+  params: typeof taskParamsSchema;
+};
+
+// Authenticated user type
+type AuthenticatedUser = {
+  userId: string;
+  email: string;
+  role: string;
+};
 
 export async function createTask(
-  user: { userId: string; email: string; role: string },
-  metadata
-) {
+  user: AuthenticatedUser,
+  metadata: ValidatedMetadata<CreateTaskSchemas>
+): Promise<Result<Task>> {
   const task = await createTaskRecord({
     ...metadata.body,
     userId: user.userId,
@@ -21,9 +53,9 @@ export async function createTask(
 }
 
 export async function updateTask(
-  user: { userId: string; email: string; role: string },
-  metadata: { body: any; params: { id: string } }
-) {
+  user: AuthenticatedUser,
+  metadata: ValidatedMetadata<UpdateTaskSchemas>
+): Promise<Result<Task>> {
   const task = await updateTaskRecord(
     metadata.params.id,
     user.userId,
@@ -38,9 +70,9 @@ export async function updateTask(
 }
 
 export async function toggleTask(
-  user: { userId: string; email: string; role: string },
-  metadata: { params: { id: string } }
-) {
+  user: AuthenticatedUser,
+  metadata: ValidatedMetadata<TaskParamsSchemas>
+): Promise<Result<Task>> {
   const existingTask = await findTaskById(metadata.params.id, user.userId);
 
   if (!existingTask) {
@@ -55,9 +87,9 @@ export async function toggleTask(
 }
 
 export async function deleteTask(
-  user: { userId: string; email: string; role: string },
-  metadata: { params: { id: string } }
-) {
+  user: AuthenticatedUser,
+  metadata: ValidatedMetadata<TaskParamsSchemas>
+): Promise<Result<{ message: string }>> {
   const deleted = await deleteTaskRecord(metadata.params.id, user.userId);
 
   if (!deleted) {
@@ -68,9 +100,9 @@ export async function deleteTask(
 }
 
 export async function getTask(
-  user: { userId: string; email: string; role: string },
-  metadata: { params: { id: string } }
-) {
+  user: AuthenticatedUser,
+  metadata: ValidatedMetadata<TaskParamsSchemas>
+): Promise<Result<Task>> {
   const task = await findTaskById(metadata.params.id, user.userId);
 
   if (!task) {
@@ -80,21 +112,29 @@ export async function getTask(
   return Ok(task);
 }
 
-export async function listTasks(user: {
-  userId: string;
-  email: string;
-  role: string;
-}) {
+export async function listTasks(
+  user: AuthenticatedUser,
+  metadata: ValidatedMetadata<{}>
+): Promise<Result<Task[]>> {
   const tasks = await findTasksByUserId(user.userId);
   return Ok(tasks);
 }
 
 // Web-specific task functions
-export async function getTasksData(user: {
-  userId: string;
-  email: string;
-  role: string;
-}) {
+export async function getTasksData(
+  user: AuthenticatedUser,
+  metadata: ValidatedMetadata<{}>
+): Promise<
+  Result<{
+    tasks: Task[];
+    stats: {
+      total: number;
+      completed: number;
+      pending: number;
+      highPriority: number;
+    };
+  }>
+> {
   const tasks = await findTasksByUserId(user.userId);
 
   const stats = {
