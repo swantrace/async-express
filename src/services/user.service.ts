@@ -24,7 +24,7 @@ export const getUserProfile = async (user: {
   });
 };
 
-export async function prepareProfileUpdate(
+export async function updateProfile(
   user: { userId: string; email: string; role: string },
   metadata: { body: any }
 ) {

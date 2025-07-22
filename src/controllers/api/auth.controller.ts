@@ -1,15 +1,15 @@
 import { compose } from "@/core/compose";
 import {
-  prepareUserRegistration,
+  registerUser,
   generateRegistrationToken,
-  prepareUserLogin,
+  loginUser,
   generateLoginToken,
 } from "@/services/auth.service";
 import { signupSchema, loginSchema } from "@/db/schema";
 
 // Compose handlers
 export const registerHandler = compose(
-  [prepareUserRegistration, generateRegistrationToken],
+  [registerUser, generateRegistrationToken],
   {
     validationSchemas: {
       body: signupSchema,
@@ -18,7 +18,7 @@ export const registerHandler = compose(
   }
 );
 
-export const loginHandler = compose([prepareUserLogin, generateLoginToken], {
+export const loginHandler = compose([loginUser, generateLoginToken], {
   validationSchemas: {
     body: loginSchema,
   },

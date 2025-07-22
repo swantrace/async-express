@@ -8,7 +8,7 @@ import {
 import { Ok, NotFound, type Result } from "@/core/result";
 import type { Task, NewTask } from "@/db/schema";
 
-export async function prepareTaskCreation(
+export async function createTask(
   user: { userId: string; email: string; role: string },
   metadata
 ) {
@@ -20,7 +20,7 @@ export async function prepareTaskCreation(
   return Ok(task);
 }
 
-export async function prepareTaskUpdate(
+export async function updateTask(
   user: { userId: string; email: string; role: string },
   metadata: { body: any; params: { id: string } }
 ) {
@@ -37,7 +37,7 @@ export async function prepareTaskUpdate(
   return Ok(task);
 }
 
-export async function prepareTaskToggle(
+export async function toggleTask(
   user: { userId: string; email: string; role: string },
   metadata: { params: { id: string } }
 ) {
@@ -54,7 +54,7 @@ export async function prepareTaskToggle(
   return Ok(updatedTask!);
 }
 
-export async function prepareTaskDeletion(
+export async function deleteTask(
   user: { userId: string; email: string; role: string },
   metadata: { params: { id: string } }
 ) {
@@ -67,7 +67,7 @@ export async function prepareTaskDeletion(
   return Ok({ message: "Task deleted successfully" });
 }
 
-export async function prepareTaskGet(
+export async function getTask(
   user: { userId: string; email: string; role: string },
   metadata: { params: { id: string } }
 ) {
@@ -80,7 +80,7 @@ export async function prepareTaskGet(
   return Ok(task);
 }
 
-export async function prepareTasksList(user: {
+export async function listTasks(user: {
   userId: string;
   email: string;
   role: string;

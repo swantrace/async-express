@@ -1,35 +1,31 @@
 import express, { Request, Response } from "express";
 import { compose } from "@/core/compose";
 import {
-  prepareUserRegistration,
+  registerUser,
   generateRegistrationTokenWithCookie,
-  prepareUserLogin,
+  loginUser,
   generateLoginTokenWithCookie,
 } from "@/services/auth.service";
 import {
-  prepareLoginPage,
-  prepareSignupPage,
+  renderLoginPage,
+  renderSignupPage,
   redirectAfterLogin,
   redirectAfterSignup,
 } from "@/services/web.service";
 import { signupSchema, loginSchema } from "@/db/schema";
 
 // Page rendering handlers
-export const renderLoginHandler = compose([prepareLoginPage], {
+export const renderLoginHandler = compose([renderLoginPage], {
   enableLogging: true,
 });
 
-export const renderSignupHandler = compose([prepareSignupPage], {
+export const renderSignupHandler = compose([renderSignupPage], {
   enableLogging: true,
 });
 
 // Compose handlers for web routes (using cookies and redirects)
 export const signupHandler = compose(
-  [
-    prepareUserRegistration,
-    generateRegistrationTokenWithCookie,
-    redirectAfterSignup,
-  ],
+  [registerUser, generateRegistrationTokenWithCookie, redirectAfterSignup],
   {
     enableLogging: true,
     validationSchemas: {
@@ -39,7 +35,7 @@ export const signupHandler = compose(
 );
 
 export const loginHandler = compose(
-  [prepareUserLogin, generateLoginTokenWithCookie, redirectAfterLogin],
+  [loginUser, generateLoginTokenWithCookie, redirectAfterLogin],
   {
     enableLogging: true,
     validationSchemas: {

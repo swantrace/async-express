@@ -20,7 +20,7 @@ type LoginSchemas = {
 };
 
 // Auth pipeline functions
-export async function prepareUserRegistration(
+export async function registerUser(
   _: null,
   metadata: ValidatedMetadata<RegisterSchemas>
 ): Promise<Result<{ message: string; user: any }>> {
@@ -67,7 +67,7 @@ export async function generateRegistrationToken(data: {
   });
 }
 
-export async function prepareUserLogin(
+export async function loginUser(
   _: null,
   metadata: ValidatedMetadata<LoginSchemas>
 ): Promise<Result<any>> {

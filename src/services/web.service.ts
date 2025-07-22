@@ -1,7 +1,7 @@
 import { Ok, type Result } from "@/core/result";
 
 // Auth rendering functions
-export async function prepareLoginPage(): Promise<
+export async function renderLoginPage(): Promise<
   Result<{ view: string; data: any }>
 > {
   return Ok({
@@ -12,7 +12,7 @@ export async function prepareLoginPage(): Promise<
   });
 }
 
-export async function prepareSignupPage(): Promise<
+export async function renderSignupPage(): Promise<
   Result<{ view: string; data: any }>
 > {
   return Ok({
