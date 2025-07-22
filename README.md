@@ -1,15 +1,52 @@
-# bun-api-project
+# Async Express - A New Way to Build TypeScript Node Applications
 
-To install dependencies:
+A **modern TypeScript Node starter** that revolutionizes Express.js development with **functional programming patterns** and **bulletproof error handling**. Perfect foundation for scalable web applications.
 
-```bash
-bun install
+## 🚀 What Makes This Different
+
+Instead of traditional Express middleware chains, this starter introduces a **functional pipeline composition system**:
+
+```typescript
+export const createTaskHandler = compose([authenticateApiUser, createTask], {
+  validationSchemas: { body: createTaskSchema },
+  enableLogging: true,
+});
 ```
 
-To run:
+## 📦 Quick Start
 
 ```bash
-bun run index.ts
+# Clone and install
+git clone <repository-url>
+cd async-express
+pnpm install
+
+# Database setup
+pnpm run db:generate
+pnpm run db:migrate
+
+# Development
+pnpm run dev
+
+# Production build
+pnpm run build
+pnpm start
 ```
 
-This project was created using `bun init` in bun v1.2.5. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+## 🔍 Project Structure
+
+```
+src/
+├── core/           # Framework-level abstractions
+│   ├── compose.ts  # Pipeline composition system
+│   └── result.ts   # Result pattern implementation
+├── controllers/    # Request handlers (API + Web)
+├── services/       # Business logic layer
+├── repositories/   # Data access layer
+├── db/            # Database schema and client
+└── routes/        # Route definitions
+```
+
+---
+
+_A modern TypeScript Node starter that makes Express.js development more functional, type-safe, and maintainable._

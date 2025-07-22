@@ -55,4 +55,28 @@ app.use((_req, res) => {
   });
 });
 
+// Error handling middleware
+app.use(
+  (
+    err: any,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction
+  ) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+
+    console.error("Error:", err);
+
+    res.status(status).render("error", {
+      title: status === 500 ? "Server Error" : "Error",
+      message: status === 500 ? "Something went wrong on our end." : message,
+      error: {
+        status,
+        stack: process.env.NODE_ENV === "development" ? err.stack : null,
+      },
+    });
+  }
+);
+
 export default app;

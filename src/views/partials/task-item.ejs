@@ -21,10 +21,10 @@
     </div>
   </div>
   <div class="task-actions">
-    <button onclick="toggleTask('<%= task.id %>')" class="btn-toggle">
+    <button data-task-id="<%= task.id %>" class="btn-toggle toggle-task">
       <%= task.completed ? 'Mark Incomplete' : 'Mark Complete' %>
     </button>
-    <button onclick="deleteTask('<%= task.id %>')" class="btn-delete">
+    <button data-task-id="<%= task.id %>" class="btn-delete delete-task">
       Delete
     </button>
   </div>
